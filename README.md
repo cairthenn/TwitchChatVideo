@@ -39,14 +39,6 @@ Enable or disable user chat badges.
 ### Vod Chat
 If enabled, chat posted by users during a vod will be included.
 
-## What settings should I use?
-
-Twitch Chat Video ships with some reasonable defaults, but choose what works for you. While you have the option to render large videos, it's probably not what you're looking for. Here are some good guidelines:
-
-* Keep your video resolution and font size small.
-* 15 FPS is more than sufficient for anything except non-stop chat.
-* If you have the time to wait, VP8 is going to produce better results than MPEG4.
-
 ## Help!
 
 If something doesn't seem to be working properly, you have something you'd like to see added, or you simply know way more about all of this than me and have some feedback, feel free to [create an issue](https://github.com/cairface/TwitchChatVideo/issues)!
