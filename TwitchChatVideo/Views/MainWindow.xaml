@@ -85,7 +85,7 @@
                         <Label Content="Background" HorizontalAlignment="Center" VerticalAlignment="Center"></Label>
                         <xctk:ColorPicker Grid.Row="1" SelectedColor="{Binding BGColor}" Margin="0,0,5,0"></xctk:ColorPicker>
                         <Label Grid.Column="1" Content="Chat"  HorizontalAlignment="Center" VerticalAlignment="Center"></Label>
-                        <xctk:ColorPicker Grid.Row="1" Grid.Column="1" SelectedColor="{Binding ChatColor}" HorizontalAlignment="Center" Margin="5,0,0,0"/>
+                        <xctk:ColorPicker Grid.Row="1" Grid.Column="1" SelectedColor="{Binding ChatColor}" Margin="5,0,0,0"/>
                     </Grid>
                     <StackPanel Grid.Row="1">
                         <Label Content="Font" HorizontalAlignment="Center" VerticalAlignment="Center"></Label>
@@ -116,11 +116,11 @@
                         <Label Grid.Column="1" Content="Video Height" HorizontalAlignment="Center" VerticalAlignment="Center"></Label>
                         <TextBox Grid.Column="1" Grid.Row="1" Text="{Binding Height}" Margin="5,0,0,0" Padding="5"></TextBox>
                     </Grid>
-                    <StackPanel Grid.Row="2">
+                    <StackPanel Grid.Row="1">
                         <Label Content="Line Spacing" HorizontalAlignment="Center" VerticalAlignment="Center"></Label>
                         <Slider Maximum="10" Minimum="0" AutoToolTipPlacement="TopLeft" TickFrequency="0.1" Value="{Binding LineSpacing}"></Slider>
                     </StackPanel>
-                    <StackPanel  Grid.Row="1">
+                    <StackPanel  Grid.Row="2">
                         <Label Content="" HorizontalAlignment="Center" VerticalAlignment="Center"></Label>
                         <StackPanel HorizontalAlignment="Center" Orientation="Horizontal">
                             <CheckBox IsChecked="{Binding ShowBadges}" Content="Badges" Margin="0,0,5,0"/>
