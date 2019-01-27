@@ -25,8 +25,8 @@ namespace TwitchChatVideo
         public string ID { get; set; }
         public Color BGColor { get; internal set; }
         public Color ChatColor { get; internal set; }
-        public float Width { get; internal set; }
-        public float Height { get; internal set; }
+        public int Width { get; internal set; }
+        public int Height { get; internal set; }
         public Font Font { get; internal set; }
         public bool VodChat { get; internal set; }
         public float LineSpacing { get; internal set; }
@@ -38,8 +38,8 @@ namespace TwitchChatVideo
             LineSpacing = vm.LineSpacing;
             BGColor = Color.FromArgb(vm.BGColor.A, vm.BGColor.R, vm.BGColor.G, vm.BGColor.B);
             ChatColor = Color.FromArgb(vm.ChatColor.A, vm.ChatColor.R, vm.ChatColor.G, vm.ChatColor.B);
-            Width = vm.Width % 2 == 0 ? vm.Width : vm.Width - 1;
-            Height = vm.Height % 2 == 0 ? vm.Height : vm.Height - 1;
+            Width = (int) vm.Width;
+            Height = (int)vm.Height;
             Font = new Font(vm.FontFamily.ToString(), vm.FontSize);
             VodChat = vm.VodChat;
             ShowBadges = vm.ShowBadges;
@@ -100,12 +100,12 @@ namespace TwitchChatVideo
             var last_chat = 0;
 
             return await Task.Run(() =>
-            { 
+            {
                 using (var writer = new VideoFileWriter())
                 {
-                    writer.Open(path, (int)Width, (int)Height, FPS, Codec);
-                    using (var bmp = new Bitmap((int)Width, (int)Height))
+                    using (var bmp = new Bitmap(Width, Height))
                     {
+                        writer.Open(path, Width, Height, FPS, Codec);
                         for (int i = start_frame; i <= end_frame; i++)
                         {
                             if (ct.IsCancellationRequested)
