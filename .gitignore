@@ -1,2 +1,3 @@
-TwitchChatVideo/bin/*
-.vs/*
+bin
+obj
+.vs/**

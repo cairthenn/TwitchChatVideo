@@ -164,7 +164,7 @@ namespace TwitchChatVideo
             {
                 segment = await DownloadChatSegmentAsync(id, segment["_next"].ToString(), progress, ct);
 
-                if (!segment.HasValues)
+                if (ct.IsCancellationRequested || !segment.HasValues)
                 {
                     return default(JToken);
                 }
