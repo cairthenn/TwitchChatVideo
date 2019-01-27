@@ -22,7 +22,7 @@ namespace TwitchChatVideo
             var g_dif = (byte) (value.G - other.G);
             var b_dif = (byte) (value.B - other.B);
 
-            if(r_dif < 128 && g_dif < 128 && b_dif < 128)
+            if(r_dif < 64 && g_dif < 64 && b_dif < 64)
             {
                 return Color.FromArgb((value.R + 128) % 255, (value.G + 128) % 255, (value.B + 128) % 255);
             }
