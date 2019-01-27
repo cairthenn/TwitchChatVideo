@@ -134,11 +134,9 @@ namespace TwitchChatVideo
                                 }
 
                             }
-                            DrawFrame(bmp, drawable_messages, i);
 
-                            var data = bmp.LockBits(bounds, System.Drawing.Imaging.ImageLockMode.ReadOnly, bmp.PixelFormat);
-                            writer.WriteVideoFrame(data);
-                            bmp.UnlockBits(data);
+                            DrawFrame(bmp, drawable_messages, i);
+                            writer.WriteVideoFrame(bmp);
                         }
 
 
