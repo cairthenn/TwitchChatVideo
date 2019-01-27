@@ -106,6 +106,8 @@ namespace TwitchChatVideo
                     using (var bmp = new Bitmap(Width, Height))
                     {
                         writer.Open(path, Width, Height, FPS, Codec);
+                        var bounds = new Rectangle(0, 0, Width, Height);
+
                         for (int i = start_frame; i <= end_frame; i++)
                         {
                             if (ct.IsCancellationRequested)
@@ -133,8 +135,12 @@ namespace TwitchChatVideo
 
                             }
                             DrawFrame(bmp, drawable_messages, i);
-                            writer.WriteVideoFrame(bmp);
+
+                            var data = bmp.LockBits(bounds, System.Drawing.Imaging.ImageLockMode.ReadOnly, bmp.PixelFormat);
+                            writer.WriteVideoFrame(data);
+                            bmp.UnlockBits(data);
                         }
+
 
                         return true;
                     }
