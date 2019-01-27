@@ -45,6 +45,6 @@ If something doesn't seem to be working properly, you have something you'd like 
 
 ## Notes
 
-Several small image files will be downloaded during the video creation process and stored in the `badges`, `emotes`, and `cheers` directories. This is mostly due to a limitation in .NET relating to animating GIFs, but comes with the benefit of not having to fetch the image multiple times over several video. If desired, they can be deleted between videos and any needed images will be fetched again.
+Several small image files will be downloaded during the video creation process and stored in the `badges`, `emotes`, and `cheers` directories. This is mostly due to a limitation in .NET relating to animating GIFs, but comes with the benefit of not having to fetch the image multiple times over several videos. If desired, they can be deleted between videos and any needed images will be fetched again.
 
 Similarly, a log file for each video will be created and published to `logs`. Downloading chat from Twitch takes a long time, so if there is a log file available, it will be used instead. If for some reason you wish to fetch a new version of chat (to include new vod comments, for example), simply delete the appropriate log file.
