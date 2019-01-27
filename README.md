@@ -28,14 +28,6 @@ The horiztonal resolution of resulting video.
 ### Video Height
 The vertical resolution of resulting video.
 
-### Encoding
-The codec used to render video.
-* MPEG4 - Good quality, large file size, fast render time
-* VP8 - Great quality, small file size, slow render time
-
-### FPS
-The FPS of the resulting video. This option is provided to alleviate long render times. 10FPS is not reccommended for very fast moving chats.
-
 ### Line Spacing
 Inserts additional padding between chats by different users.
 
