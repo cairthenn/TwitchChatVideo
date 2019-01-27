@@ -1,0 +1,14 @@
+﻿<Window x:Name="VideoPreview" x:Class="TwitchChatVideo.PreviewWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:TwitchChatVideo"
+        mc:Ignorable="d"
+        Title="Video Preview" ResizeMode="NoResize" HorizontalAlignment="Center" VerticalAlignment="Center"
+        Margin="0" SizeToContent="WidthAndHeight" Icon="/Twitch Chat Video;component/icon.ico"
+        >
+    <Grid Height="{Binding Height}" Width="{Binding Width}">
+        <Image Source="{Binding PreviewImage}" Stretch="None" Grid.ColumnSpan="2" VerticalAlignment="Bottom" HorizontalAlignment="Left"></Image>
+    </Grid>
+</Window>

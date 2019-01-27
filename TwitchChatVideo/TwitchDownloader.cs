@@ -1,0 +1,179 @@
+﻿using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
+using System;
+using System.Collections.Generic;
+using System.Drawing;
+using System.IO;
+using System.Net;
+using System.Threading;
+using System.Threading.Tasks;
+using TwitchChatVideo.Properties;
+
+namespace TwitchChatVideo
+{
+    class TwitchDownloader
+    {
+        private const string BaseURLChat = "https://api.twitch.tv/v5/videos/{0}/comments?cursor={1}";
+        private const string BaseURLVideo = "https://api.twitch.tv/v5/videos/{0}";
+        private const string BaseURLBits = "https://api.twitch.tv/kraken/bits/actions?channel_id={0}";
+        private const string BaseURLGlobalBadges = "https://badges.twitch.tv/v1/badges/global/display";
+        private const string BaseURLChannelBadges = "https://badges.twitch.tv/v1/badges/channels/{0}/display";
+
+
+        public static Image GetImage(string local_path, string url)
+        {
+            if (!File.Exists(local_path))
+            {
+                using (var client = new WebClient())
+                {
+                    client.DownloadFile(url, local_path);
+                }
+            }
+
+            return Image.FromFile(local_path);
+        }
+
+        public static async Task<VodInfo> DownloadVideoInfoAsync(string id, IProgress<VideoProgress> progress = null, CancellationToken ct = default(CancellationToken))
+        {
+            progress?.Report(new VideoProgress(0, 1, VideoProgress.VideoStatus.Info));
+            var url = string.Format(BaseURLVideo, id);
+            var result = (await DownloadAsync(url, progress, ct)).ToObject<VodInfo>();
+            progress?.Report(new VideoProgress(1, 1, VideoProgress.VideoStatus.Info));
+            return result;
+        }
+
+        public static async Task<Bits> DownloadBitsAsync(string id, IProgress<VideoProgress> progress = null, CancellationToken ct = default(CancellationToken))
+        {
+            progress?.Report(new VideoProgress(0, 1, VideoProgress.VideoStatus.Cheers));
+            var url = string.Format(BaseURLBits, id);
+            var result = (await DownloadAsync(url, progress, ct))["actions"]?.ToObject<List<TwitchCheer>>();
+            progress?.Report(new VideoProgress(1, 1, VideoProgress.VideoStatus.Cheers));
+            return new Bits(result);
+        }
+
+        public static async Task<Badges> DownloadBadgesAsync(string id, IProgress<VideoProgress> progress = null, CancellationToken ct = default(CancellationToken))
+        {
+            progress?.Report(new VideoProgress(0, 1, VideoProgress.VideoStatus.Badges));
+            var results = new Dictionary<string, Dictionary<string, TwitchBadge>>();
+
+            foreach (JProperty set in (await DownloadAsync(BaseURLGlobalBadges, progress, ct))["badge_sets"])
+            {
+                results.Add(set.Name, set.Value["versions"].ToObject<Dictionary<String, TwitchBadge>>());
+            }
+
+            var channel_results = await DownloadAsync(String.Format(BaseURLChannelBadges, id), progress, ct);
+
+            if (channel_results["badge_sets"]?["bits"] != null)
+            {
+                foreach (JProperty badge in channel_results["badge_sets"]["bits"]["versions"])
+                {
+                    results["bits"][badge.Name] = badge.Value.ToObject<TwitchBadge>();
+                }
+            }
+
+            if (channel_results["badge_sets"]?["subscriber"] != null)
+            {
+                foreach (JProperty badge in channel_results["badge_sets"]["subscriber"]["versions"])
+                {
+                    results["subscriber"][badge.Name] = badge.Value.ToObject<TwitchBadge>();
+                }
+            }
+            progress?.Report(new VideoProgress(1, 1, VideoProgress.VideoStatus.Badges));
+            return new Badges(id, results);
+        }
+
+        public static async Task<List<ChatMessage>> GetChatAsync(string id, double duration, IProgress<VideoProgress> progress = null, CancellationToken ct = default(CancellationToken))
+        {
+            return await Task.Run(async () =>
+            {
+                try {
+                    var file = string.Format("./{0}/{1}.txt", ChatVideo.LogDirectory, id);
+                    if (File.Exists(file))
+                    {
+                        using (var f = File.OpenText(file))
+                        using (var r = new JsonTextReader(f))
+                        {
+                            return JToken.ReadFrom(r).ToObject<List<ChatMessage>>();
+                        }
+                    }
+
+                    var chat_history = await DownloadChatHistoryAsync(id, duration, progress, ct);
+
+                    if (chat_history.HasValues)
+                    {
+                        using (var f = File.CreateText(file))
+                        using (var w = new JsonTextWriter(f))
+                        {
+                            chat_history.WriteTo(w);
+                        }
+                    }
+
+                    return chat_history.ToObject<List<ChatMessage>>();
+                }
+                finally
+                {
+                    progress?.Report(new VideoProgress(1, 1, VideoProgress.VideoStatus.Chat));
+                }
+            });
+        }
+
+        private static async Task<JObject> DownloadAsync(string url, IProgress<VideoProgress> progress = null, CancellationToken ct = default(CancellationToken))
+        {
+            if(ct.IsCancellationRequested)
+            {
+                return default(JObject);
+            }
+
+            var req = (HttpWebRequest)WebRequest.Create(url);
+            req.Headers.Add("Client-ID", Resources.client_id);
+            req.Accept = "application/vnd.twitchtv.v5+json";
+
+            try
+            {
+                using (var stream = new StreamReader((await req.GetResponseAsync())?.GetResponseStream()))
+                {
+                    return JObject.Parse(stream.ReadToEnd());
+                }
+            }
+            catch (WebException e)
+            {
+                System.Windows.MessageBox.Show(string.Format("Unable to reach {0}: \n\n{1}", url, e.Message));
+                return default(JObject);
+            }
+        }
+
+        private static async Task<JObject> DownloadChatSegmentAsync(string id, string cursor = "", IProgress<VideoProgress> progress = null, CancellationToken ct = default(CancellationToken))
+        {
+            return await DownloadAsync(string.Format(BaseURLChat, id, cursor, progress, ct));
+        }
+
+        private static async Task<JToken> DownloadChatHistoryAsync(string id, double duration, IProgress<VideoProgress> progress, CancellationToken ct)
+        {
+            var chat = new JObject();
+
+            var segment = await DownloadChatSegmentAsync(id, null, progress, ct);
+
+            if(!segment.HasValues)
+            {
+                return default(JToken);
+            }
+
+            chat.Add("comments", segment["comments"]);
+
+            while (segment["_next"] != null)
+            {
+                segment = await DownloadChatSegmentAsync(id, segment["_next"].ToString(), progress, ct);
+
+                if (!segment.HasValues)
+                {
+                    return default(JToken);
+                }
+
+                chat.Merge(segment, new JsonMergeSettings { MergeArrayHandling = MergeArrayHandling.Concat });
+                progress?.Report(new VideoProgress((long)chat["comments"].Last?["content_offset_seconds"], (long)duration, VideoProgress.VideoStatus.Chat));
+            }
+
+            return chat["comments"];
+        }
+    }
+}
