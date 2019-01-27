@@ -43,7 +43,7 @@ Inserts additional padding between chats by different users.
 
 ## Help!
 
-If something doesn't seem to be working properly, you have something you'd like to see added, or you simply know way more about all of this than me and have some feedback, feel free to [create an issue](https://github.com/cairface/TwitchChatVideo/issues)!
+If something doesn't seem to be working properly, you have something you'd like to see added, or you simply know way more about all of this than me and have some feedback, feel free to [create an issue](https://github.com/cairface/TwitchChatVideo/issues).
 
 ## Notes
 
