@@ -2,6 +2,8 @@
 
 Fetch chat for a Twitch broadcast and create a video replay.
 
+This program makes use of [Accord's .NET FFMPEG Library](http://accord-framework.net/index.html) for video rendering.
+
 ## Usage
 
 Enter the URL of a video and then click make video. It should look like this: `https://www.twitch.tv/videos/<Video ID>`. You may also simply use the Video ID.
