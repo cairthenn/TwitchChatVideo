@@ -3,6 +3,7 @@
 Fetch chat for a Twitch broadcast and create a video replay.
 
 You may be required to [install a newer version of .NET Framework](https://dotnet.microsoft.com/download/dotnet-framework-runtime) to run this program. Currently, this project uses version 4.7.2 
+
 This program makes use of [Accord's .NET FFMPEG Library](http://accord-framework.net/index.html) for video rendering.
 
 ## Usage
