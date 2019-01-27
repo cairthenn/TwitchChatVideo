@@ -198,9 +198,9 @@ namespace TwitchChatVideo
 
             // \p{Cs} or \p{Surrogate}: one half of a surrogate pair in UTF-16 encoding.
             var words = Regex.Replace(message.Text, @"\p{Cs}\p{Cs}", m =>
-            {                
-                message.Emotes?.Where(e => e.Begin > m.Index).ToList().ForEach(e2 => e2.Begin += 1);
-                return Emoji.Exists(m.Value) ? ' ' + m.Value + ' ' : "??";
+            {   
+                message.Emotes?.Where(e => e.Begin > m.Index)?.ToList().ForEach(e2 => e2.Begin += 1);
+                return Emoji.Exists(m.Value) ? ' ' + m.Value + ' ' : "?";
             }).Split(' ').Where(s => s != string.Empty);
 
             var builder = new StringBuilder();
@@ -259,7 +259,7 @@ namespace TwitchChatVideo
             foreach (var word in words)
             {
                 var emote = Emoji.GetEmoji(word) ?? FFZ?.GetEmote(word) ?? BTTV?.GetEmote(word) ??
-                    TwitchEmote.GetEmote(message.Emotes?.FirstOrDefault(e => e.Begin == cursor).ID);
+                    TwitchEmote.GetEmote(message.Emotes?.FirstOrDefault(e => e.Begin == cursor)?.ID);
 
                 cursor += word.Length + 1;
 

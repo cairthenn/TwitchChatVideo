@@ -28,7 +28,7 @@ namespace TwitchChatVideo
 
         public struct Message
         {
-            public struct Emote
+            public class Emote
             {
                 [JsonProperty("_id")]
                 public string ID { get; set; }
