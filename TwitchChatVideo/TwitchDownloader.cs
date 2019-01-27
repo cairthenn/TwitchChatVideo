@@ -56,14 +56,19 @@ namespace TwitchChatVideo
             progress?.Report(new VideoProgress(0, 1, VideoProgress.VideoStatus.Badges));
             var results = new Dictionary<string, Dictionary<string, TwitchBadge>>();
 
-            foreach (JProperty set in (await DownloadAsync(BaseURLGlobalBadges, progress, ct))["badge_sets"])
+            var global_results = await DownloadAsync(BaseURLGlobalBadges, progress, ct);
+
+            if(global_results?["badge_sets"] != null)
             {
-                results.Add(set.Name, set.Value["versions"].ToObject<Dictionary<String, TwitchBadge>>());
+                foreach (JProperty set in global_results?["badge_sets"])
+                {
+                    results.Add(set.Name, set.Value["versions"].ToObject<Dictionary<String, TwitchBadge>>());
+                }
             }
 
-            var channel_results = await DownloadAsync(String.Format(BaseURLChannelBadges, id), progress, ct);
+            var channel_results = await DownloadAsync(string.Format(BaseURLChannelBadges, id), progress, ct);
 
-            if (channel_results["badge_sets"]?["bits"] != null)
+            if (channel_results?["badge_sets"]?["bits"] != null)
             {
                 foreach (JProperty badge in channel_results["badge_sets"]["bits"]["versions"])
                 {
@@ -71,7 +76,7 @@ namespace TwitchChatVideo
                 }
             }
 
-            if (channel_results["badge_sets"]?["subscriber"] != null)
+            if (channel_results?["badge_sets"]?["subscriber"] != null)
             {
                 foreach (JProperty badge in channel_results["badge_sets"]["subscriber"]["versions"])
                 {
@@ -87,7 +92,7 @@ namespace TwitchChatVideo
             return await Task.Run(async () =>
             {
                 try {
-                    var file = string.Format("./{0}/{1}.txt", ChatVideo.LogDirectory, id);
+                    var file = string.Format("./{0}/{1}.json", ChatVideo.LogDirectory, id);
                     if (File.Exists(file))
                     {
                         using (var f = File.OpenText(file))
@@ -99,16 +104,16 @@ namespace TwitchChatVideo
 
                     var chat_history = await DownloadChatHistoryAsync(id, duration, progress, ct);
 
-                    if (chat_history.HasValues)
+                    if (chat_history != null)
                     {
                         using (var f = File.CreateText(file))
                         using (var w = new JsonTextWriter(f))
                         {
-                            chat_history.WriteTo(w);
+                            chat_history?.WriteTo(w);
                         }
                     }
 
-                    return chat_history.ToObject<List<ChatMessage>>();
+                    return chat_history?.ToObject<List<ChatMessage>>();
                 }
                 finally
                 {
@@ -121,7 +126,7 @@ namespace TwitchChatVideo
         {
             if(ct.IsCancellationRequested)
             {
-                return default(JObject);
+                return null;
             }
 
             var req = (HttpWebRequest)WebRequest.Create(url);
@@ -138,7 +143,7 @@ namespace TwitchChatVideo
             catch (WebException e)
             {
                 System.Windows.MessageBox.Show(string.Format("Unable to reach {0}: \n\n{1}", url, e.Message));
-                return default(JObject);
+                return null;
             }
         }
 
@@ -155,7 +160,7 @@ namespace TwitchChatVideo
 
             if(!segment.HasValues)
             {
-                return default(JToken);
+                return null;
             }
 
             chat.Add("comments", segment["comments"]);
@@ -164,9 +169,9 @@ namespace TwitchChatVideo
             {
                 segment = await DownloadChatSegmentAsync(id, segment["_next"].ToString(), progress, ct);
 
-                if (ct.IsCancellationRequested || !segment.HasValues)
+                if (ct.IsCancellationRequested || segment == null)
                 {
-                    return default(JToken);
+                    return null;
                 }
 
                 chat.Merge(segment, new JsonMergeSettings { MergeArrayHandling = MergeArrayHandling.Concat });

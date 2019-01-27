@@ -70,11 +70,16 @@ namespace TwitchChatVideo
                 var ffz = await FFZ.CreateAsync(video.Streamer, progress, ct);
                 var messages = await TwitchDownloader.GetChatAsync(ID, video.Duration, progress, ct);
 
+                if(ct.IsCancellationRequested)
+                {
+                    return false;
+                }
+
                 using (var chat_handler = new ChatHandler(VM, bttv, ffz, badges, bits))
                 {
                     int current = 0;
 
-                    var drawables = messages.Select(m =>
+                    var drawables = messages?.Select(m =>
                     {
                         progress?.Report(new VideoProgress(++current, messages.Count, VideoProgress.VideoStatus.Drawing));
                         return chat_handler.MakeDrawableMessage(m);
