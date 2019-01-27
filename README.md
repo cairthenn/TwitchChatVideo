@@ -30,14 +30,14 @@ The horiztonal resolution of resulting video.
 ### Video Height
 The vertical resolution of resulting video.
 
-### Line Spacing
-Inserts additional padding between chats by different users.
-
 ### Badges
 Enable or disable user chat badges.
 
 ### Vod Chat
 If enabled, chat posted by users during a vod will be included.
+
+### Line Spacing
+Inserts additional padding between chats by different users.
 
 ## Help!
 
