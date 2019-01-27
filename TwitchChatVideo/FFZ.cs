@@ -104,7 +104,7 @@ namespace TwitchChatVideo
         };
 
 
-        public struct FFZGlobal
+        public class FFZGlobal
         {
             [JsonProperty("default_sets")]
             public int[] Sets { get; set; }
@@ -112,7 +112,7 @@ namespace TwitchChatVideo
             public Dictionary<int, FFZSet> EmoteSets { get; set; }
         }
 
-        public struct FFZRoom
+        public class FFZRoom
         {
             public class FFZUser
             {

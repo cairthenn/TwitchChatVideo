@@ -37,7 +37,7 @@ namespace TwitchChatVideo
         {
             progress?.Report(new VideoProgress(0, 1, VideoProgress.VideoStatus.Info));
             var url = string.Format(BaseURLVideo, id);
-            var result = (await DownloadAsync(url, progress, ct)).ToObject<VodInfo>();
+            var result = (await DownloadAsync(url, progress, ct))?.ToObject<VodInfo>();
             progress?.Report(new VideoProgress(1, 1, VideoProgress.VideoStatus.Info));
             return result;
         }

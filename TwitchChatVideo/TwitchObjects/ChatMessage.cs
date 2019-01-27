@@ -10,13 +10,13 @@ namespace TwitchChatVideo
         private static Random random = new Random();
 
         public string Name => User.Name;
-        public Color Color => Content.Color.HasValue ? Content.Color.Value : Color.FromArgb(random.Next(0, 255), random.Next(0, 255), random.Next(0, 255));
+        public Color Color => Content?.Color ?? Color.FromArgb(random.Next(0, 255), random.Next(0, 255), random.Next(0, 255));
         public string Text => Content.Text;
         public List<Message.Emote> Emotes => Content.Emotes;
         public List<Message.Badge> Badges => Content.Badges;
 
 
-        public struct Commenter
+        public class Commenter
         {
             [JsonProperty("display_name")]
             public string Name { get; set; }
@@ -26,7 +26,7 @@ namespace TwitchChatVideo
             public string Type { get; set; }
         }
 
-        public struct Message
+        public class Message
         {
             public class Emote
             {
@@ -39,7 +39,7 @@ namespace TwitchChatVideo
                 public int End { get; set; }
             }
 
-            public struct Badge
+            public class Badge
             {
                 [JsonProperty("_id")]
                 public string ID { get; set; }

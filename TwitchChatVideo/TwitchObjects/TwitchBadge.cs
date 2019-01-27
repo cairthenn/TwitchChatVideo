@@ -7,7 +7,7 @@ using TwitchChatVideo.Properties;
 
 namespace TwitchChatVideo
 {
-    public struct TwitchBadge
+    public class TwitchBadge
     {
         [JsonProperty("image_url_1x")]
         public String URL { get; set; }

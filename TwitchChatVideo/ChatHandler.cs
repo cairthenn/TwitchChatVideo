@@ -21,7 +21,7 @@ namespace TwitchChatVideo
         public Color ChatColor { get; }
         public Color BGColor { get; }
         public float Spacing { get; }
-        public bool UseBadges { get; }
+        public bool ShowBadges { get; }
         public bool VodChat { get; }
         public float Width { get; }
         public BTTV BTTV { get; }
@@ -169,15 +169,15 @@ namespace TwitchChatVideo
             }
         }
 
-        public ChatHandler(ViewModel vm, BTTV bttv, FFZ ffz, Badges badges, Bits bits)
+        public ChatHandler(ChatVideo cv, BTTV bttv, FFZ ffz, Badges badges, Bits bits)
         {
-            Font = new Font(vm.FontFamily.ToString(), vm.FontSize);
+            Font = (Font) cv.Font.Clone();
             BoldFont = new Font(Font, FontStyle.Bold);
-            ChatColor = Color.FromArgb(vm.ChatColor.A, vm.ChatColor.R, vm.ChatColor.G, vm.ChatColor.B);
-            BGColor = Color.FromArgb(vm.BGColor.A, vm.BGColor.R, vm.BGColor.G, vm.BGColor.B);
-            Width = vm.Width;
-            Spacing = vm.LineSpacing;
-            UseBadges = vm.ShowBadges;
+            ChatColor = Color.FromArgb(cv.ChatColor.A, cv.ChatColor.R, cv.ChatColor.G, cv.ChatColor.B);
+            BGColor = Color.FromArgb(cv.BGColor.A, cv.BGColor.R, cv.BGColor.G, cv.BGColor.B);
+            Width = cv.Width;
+            Spacing = cv.LineSpacing;
+            ShowBadges = cv.ShowBadges;
             BTTV = bttv;
             FFZ = ffz;
             Badges = badges;
@@ -216,7 +216,7 @@ namespace TwitchChatVideo
             var user_tag = message.Name + ":";
             var user_size = MeasureText(user_tag, BoldFont);
 
-            if (UseBadges)
+            if (ShowBadges)
             {
                 message.Badges?.ForEach(b =>
                 {
@@ -364,9 +364,9 @@ namespace TwitchChatVideo
             public bool Live { get; internal set; }
         }
 
-        public static Stack<DrawableMessage> MakeSampleChat(ViewModel vm)
+        public static Stack<DrawableMessage> MakeSampleChat(ChatVideo cv)
         {
-            using (var ch = new ChatHandler(vm, null, FFZ.SampleFFZ, Badges.SampleBadges, null))
+            using (var ch = new ChatHandler(cv, null, FFZ.SampleFFZ, Badges.SampleBadges, null))
             {
                 var lines = new Stack<DrawableMessage>();
                 MakeSampleMessages().ForEach(m => lines.Push(ch.MakeDrawableMessage(m)));

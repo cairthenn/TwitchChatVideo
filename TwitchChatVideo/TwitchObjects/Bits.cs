@@ -99,9 +99,9 @@ namespace TwitchChatVideo
         }
     }
 
-    public struct TwitchCheer
+    public class TwitchCheer
     {
-        public struct CheerTier
+        public class CheerTier
         {
             [JsonProperty("min_bits")]
             public int MinBits { get; set; }
@@ -114,9 +114,9 @@ namespace TwitchChatVideo
             [JsonProperty("images")]
             public CheerImages Images { get; set; }
 
-            public struct CheerImages
+            public class CheerImages
             {
-                public struct CheerStyles
+                public class CheerStyles
                 {
                     [JsonProperty("animated")]
                     public Dictionary<float, string> Animated { get; set; }

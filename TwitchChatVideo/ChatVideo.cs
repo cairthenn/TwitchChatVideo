@@ -23,29 +23,26 @@ namespace TwitchChatVideo
         public const VideoCodec Codec = VideoCodec.H264;
 
         public string ID { get; set; }
-        private float Spacing { get; set; }
-        private Color BGColor { get; set; }
-        private Color ChatColor { get; set; }
-        private float Width { get; set; }
-        private float Height { get; set; }
-        private Font Font { get; set; }
-        private bool UseBadges { get; set; }
-        private bool VodChat { get; set; }
-
-        private ViewModel VM { get; }
+        public Color BGColor { get; internal set; }
+        public Color ChatColor { get; internal set; }
+        public float Width { get; internal set; }
+        public float Height { get; internal set; }
+        public Font Font { get; internal set; }
+        public bool VodChat { get; internal set; }
+        public float LineSpacing { get; internal set; }
+        public bool ShowBadges { get; internal set; }
 
         public ChatVideo(ViewModel vm)
         {
-            VM = vm;
             ID = vm.URL?.Split('/').LastOrDefault() ?? vm.URL ?? "";
-            Spacing = vm.LineSpacing;
+            LineSpacing = vm.LineSpacing;
             BGColor = Color.FromArgb(vm.BGColor.A, vm.BGColor.R, vm.BGColor.G, vm.BGColor.B);
             ChatColor = Color.FromArgb(vm.ChatColor.A, vm.ChatColor.R, vm.ChatColor.G, vm.ChatColor.B);
-            Width = vm.Width;
-            Height = vm.Height;
+            Width = vm.Width % 2 == 0 ? vm.Width : vm.Width - 1;
+            Height = vm.Height % 2 == 0 ? vm.Height : vm.Height - 1;
             Font = new Font(vm.FontFamily.ToString(), vm.FontSize);
             VodChat = vm.VodChat;
-            UseBadges = vm.ShowBadges;
+            ShowBadges = vm.ShowBadges;
         }
 
         public void Dispose()
@@ -59,7 +56,7 @@ namespace TwitchChatVideo
             {
                 var video = await TwitchDownloader.DownloadVideoInfoAsync(ID, progress, ct);
 
-                if (video.ID == string.Empty)
+                if (video?.ID == null)
                 {
                     return false;
                 }
@@ -75,7 +72,7 @@ namespace TwitchChatVideo
                     return false;
                 }
 
-                using (var chat_handler = new ChatHandler(VM, bttv, ffz, badges, bits))
+                using (var chat_handler = new ChatHandler(this, bttv, ffz, badges, bits))
                 {
                     int current = 0;
 
@@ -149,14 +146,14 @@ namespace TwitchChatVideo
 
         public static void DrawPreview(ViewModel vm, Bitmap bmp)
         {
-            var messages = ChatHandler.MakeSampleChat(vm);
             using (var chat = new ChatVideo(vm))
             {
+                var messages = ChatHandler.MakeSampleChat(chat);
                 chat.DrawFrame(bmp, messages);
-            }
-            foreach (var msg in messages)
-            {
-                msg.Lines.ForEach(m => m.Drawables.ForEach(d => d.Dispose()));
+                foreach (var msg in messages)
+                {
+                    msg.Lines.ForEach(m => m.Drawables.ForEach(d => d.Dispose()));
+                }
             }
         }
 
@@ -173,7 +170,7 @@ namespace TwitchChatVideo
 
             var messages = lines.TakeWhile(x => {
                 var passes = height < (Height - VerticalPad * 2);
-                height += x.Lines.LastOrDefault().Height + Spacing;
+                height += x.Lines.LastOrDefault().Height + LineSpacing;
                 return passes;
             });
 
@@ -186,7 +183,7 @@ namespace TwitchChatVideo
                 foreach (var message in messages)
                 {
                     var last_line = message.Lines.LastOrDefault();
-                    var message_y = local_y - (last_line.OffsetY + last_line.Height + Spacing);
+                    var message_y = local_y - (last_line.OffsetY + last_line.Height + LineSpacing);
                     local_y = message_y;
 
                     foreach (var line in message.Lines)

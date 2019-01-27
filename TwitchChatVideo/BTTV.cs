@@ -75,14 +75,14 @@ namespace TwitchChatVideo
             return img;
         }
 
-        public struct EmoteList
+        public class EmoteList
         {
             [JsonProperty("urlTemplate")]
             public string BaseURL { get; set; }
             [JsonProperty("emotes")]
             public Emote[] Emotes { get; set; }
 
-            public struct Emote
+            public class Emote
             {
                 [JsonProperty("id")]
                 public string ID { get; set; }

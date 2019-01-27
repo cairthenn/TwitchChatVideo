@@ -3,10 +3,10 @@ using Newtonsoft.Json;
 
 namespace TwitchChatVideo
 {
-    public struct VodInfo
+    public class VodInfo
     {
-        public string Streamer => Channel.Name;
-        public string StreamerID => Channel.ID;
+        public string Streamer => Channel?.Name;
+        public string StreamerID => Channel?.ID;
 
         [JsonProperty("_id")]
         public string ID { get; set; }
