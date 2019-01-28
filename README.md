@@ -4,9 +4,9 @@ Create a chat replay video for any Twitch vod. Currently, a build of the project
 
 This program requires .NET Framework Version 4.7.2. You may need to [install a newer version of .NET Framework](https://dotnet.microsoft.com/download/dotnet-framework-runtime) before running it.
 
-Here's an example output at 300x300. YouTube stretches this to their player, so it's a bit blurry:
+Here's an example output at 640x480:
 
-[![Click to view an example](http://img.youtube.com/vi/Qa3bVrpRb1U/0.jpg)](http://www.youtube.com/watch?v=Qa3bVrpRb1U)
+[![Click to view an example](http://img.youtube.com/vi/df7HR3lraws/0.jpg)](https://www.youtube.com/watch?v=df7HR3lraws)
 
 ## Usage
 
