@@ -8,9 +8,10 @@ namespace TwitchChatVideo
     public struct ChatMessage
     {
         private static Random random = new Random();
-
+        private Color default_color = Color.FromArgb(random.Next(0, 255), random.Next(0, 255), random.Next(0, 255));
+        
         public string Name => User.Name;
-        public Color Color => Content?.Color ?? Color.FromArgb(random.Next(0, 255), random.Next(0, 255), random.Next(0, 255));
+        public Color Color => Content?.Color ?? default_color;
         public string Text => Content.Text;
         public List<Message.Emote> Emotes => Content.Emotes;
         public List<Message.Badge> Badges => Content.Badges;
