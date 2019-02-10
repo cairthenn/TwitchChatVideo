@@ -6,12 +6,9 @@ using System.Drawing;
 namespace TwitchChatVideo
 {
     public struct ChatMessage
-    {
-        private static Random random = new Random();
-        private Color default_color = Color.FromArgb(random.Next(0, 255), random.Next(0, 255), random.Next(0, 255));
-        
+    {         
         public string Name => User.Name;
-        public Color Color => Content?.Color ?? default_color;
+        public Color Color => Content.Color;
         public string Text => Content.Text;
         public List<Message.Emote> Emotes => Content.Emotes;
         public List<Message.Badge> Badges => Content.Badges;
@@ -57,7 +54,7 @@ namespace TwitchChatVideo
             [JsonProperty("emoticons")]
             public List<Emote> Emotes { get; set; }
             [JsonProperty("user_color")]
-            public Color? Color { get; set; }
+            public Color Color { get; set; }
             [JsonProperty("bits_spent")]
             public int Bits { get; set; }
         }

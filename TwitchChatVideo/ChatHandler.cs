@@ -16,6 +16,8 @@ namespace TwitchChatVideo
         private static Image text_sizes = new Bitmap(1, 1);
         private static Graphics g = Graphics.FromImage(text_sizes);
 
+        private static Dictionary<string, Color> default_colors = new Dictionary<string, Color>();
+
         public Font Font { get; }
         public Font BoldFont { get; }
         public Color ChatColor { get; }
@@ -233,7 +235,24 @@ namespace TwitchChatVideo
                     }
                 });
             }
-            dl.Add(new User(x, y, user_size.Height, user_tag, message.Color.Contrast(BGColor), BoldFont));
+
+            var color = message.Color;
+
+            if(color == null)
+            {
+                if (default_colors.ContainsKey(message.Name))
+                {
+                    color = default_colors[message.Name];
+                }
+                else
+                {
+                    var random = new Random();
+                    color = Color.FromArgb(random.Next(0, 255), random.Next(0, 255), random.Next(0, 255));
+                    default_colors.Add(message.Name, color);
+                }
+            }
+
+            dl.Add(new User(x, y, user_size.Height, user_tag, color.Contrast(BGColor), BoldFont));
             x += user_size.Width;
 
             Action new_line = delegate
