@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -76,20 +77,33 @@ namespace TwitchChatVideo
                 {
                     int current = 0;
 
-                    var drawables = messages?.Select(m =>
+                    try
                     {
-                        progress?.Report(new VideoProgress(++current, messages.Count, VideoProgress.VideoStatus.Drawing));
-                        return chat_handler.MakeDrawableMessage(m);
-                    }).ToList();
+                        var drawables = messages?.Select(m =>
+                        {
+                            progress?.Report(new VideoProgress(++current, messages.Count, VideoProgress.VideoStatus.Drawing));
+                            return chat_handler.MakeDrawableMessage(m);
+                        }).ToList();
 
-                    var max = (int)(FPS * video.Duration);
 
-                    var path = string.Format("{0}{1}-{2}.mp4", OutputDirectory, video.Streamer, video.ID);
-                    var result = await WriteVideoFrames(path, drawables, 0, max, progress, ct);
-                    progress?.Report(new VideoProgress(1, 1, VideoProgress.VideoStatus.CleaningUp));
-                    drawables.ForEach(d => d.Lines.ForEach(l => l.Drawables.ForEach(dr => dr.Dispose())));
+                        var max = (int)(FPS * video.Duration);
+
+                        var path = string.Format("{0}{1}-{2}.mp4", OutputDirectory, video.Streamer, video.ID);
+                        var result = await WriteVideoFrames(path, drawables, 0, max, progress, ct);
+                        progress?.Report(new VideoProgress(1, 1, VideoProgress.VideoStatus.CleaningUp));
+                        drawables.ForEach(d => d.Lines.ForEach(l => l.Drawables.ForEach(dr => dr.Dispose())));
                     
-                    return result;
+                        return result;
+                    }
+                    catch (Exception e)
+                    {
+                        using (StreamWriter w = File.AppendText("error.txt"))
+                        {
+                            w.WriteLine($"{DateTime.Now.ToLongTimeString()} : {e.ToString()}");
+                        }
+
+                        return false;
+                    };
                 }
             });
         }
