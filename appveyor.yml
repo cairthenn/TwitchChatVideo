@@ -19,3 +19,6 @@ assembly_info:
 artifacts:
   - path: TwitchChatVideo/bin/x86/Release/*
 
+deploy:
+  provider: GitHub
+  tag: "v{version}"

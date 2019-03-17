@@ -1,3 +1,5 @@
+[![Build status](https://ci.appveyor.com/api/projects/status/dwm5vd8ai4903jsn?svg=true)](https://ci.appveyor.com/project/cairthenn/twitchchatvideo)
+
 # Twitch Chat Video
 
 Create a chat replay video for any Twitch vod. Currently, a build of the project is available [here](https://github.com/cairthenn/TwitchChatVideo/releases).
