@@ -22,4 +22,4 @@ artifacts:
 deploy:
   provider: GitHub
   auth_token: "%ghreleases%"
-  tag: "v%version%"
+  tag: "v{version}"
