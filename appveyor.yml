@@ -16,9 +16,11 @@ assembly_info:
   assembly_file_version: '{version}'
   assembly_informational_version: '{version}'
 
+after_build:
+  - 7z a TwitchChatVideo.zip %APPVEYOR_BUILD_FOLDER%/TwitchChatVideo/bin/x86/Release/*
+
 artifacts:
-  - path: TwitchChatVideo/bin/x86/Release/*
-    type: zip
+  - path: TwitchChatVideo.zip
 
 deploy:
   provider: GitHub
