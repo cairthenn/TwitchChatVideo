@@ -18,8 +18,9 @@ assembly_info:
 
 artifacts:
   - path: TwitchChatVideo/bin/x86/Release/*
+  - type: zip
 
 deploy:
   provider: GitHub
   auth_token: "%ghreleases%"
-  tag: "v{version}"
+  tag: "v$(appveyor_build_version)"
