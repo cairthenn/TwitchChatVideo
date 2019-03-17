@@ -3,6 +3,12 @@ before_build:
 
 image: Visual Studio 2017
 
+branches:
+  only:
+    - master
+
+skip_tags: true
+
 platform:
   - x86
 
