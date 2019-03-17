@@ -16,8 +16,6 @@ namespace TwitchChatVideo
         private static Image text_sizes = new Bitmap(1, 1);
         private static Graphics g = Graphics.FromImage(text_sizes);
 
-        private static Dictionary<string, Color> default_colors = new Dictionary<string, Color>();
-
         public Font Font { get; }
         public Font BoldFont { get; }
         public Color ChatColor { get; }
@@ -38,10 +36,11 @@ namespace TwitchChatVideo
             public float OffsetY { get; }
             public List<Drawable> Drawables { get; }
 
-            public float Height => Drawables.Max(x => x.Height);
+            public float Height { get; }
 
-            public Line(float x, float y, List<Drawable> dl)
+            public Line(float x, float y, float height, List<Drawable> dl)
             {
+                Height = height;
                 OffsetX = x;
                 OffsetY = y;
                 Drawables = dl;
@@ -164,10 +163,22 @@ namespace TwitchChatVideo
             }
         }
 
-        public static SizeF MeasureText(string text, Font font)
+        /* 
+         * For whatever reason creating a StringFormat identical to what's sepecifed by StringFormat.GenericTypographic
+         * doesn't remove the padding added to string measuring, but creating a format using it does it just fine.
+         */
+        private static readonly StringFormat format = new StringFormat(StringFormat.GenericTypographic) {
+            FormatFlags = StringFormatFlags.FitBlackBox | StringFormatFlags.NoClip | StringFormatFlags.LineLimit | StringFormatFlags.MeasureTrailingSpaces,
+            Alignment = StringAlignment.Near,
+            LineAlignment = StringAlignment.Near,
+            Trimming = StringTrimming.None,
+       
+        };
+
+        public static SizeF MeasureText(string text, Font font, int max)
         {
             lock (g) {
-                return g.MeasureString(text, font);
+                return g.MeasureString(text, font, max, format);
             }
         }
 
@@ -196,8 +207,6 @@ namespace TwitchChatVideo
         {
             var lines = new List<Line>();
 
-            var emoji_builder = new StringBuilder();
-
             // \p{Cs} or \p{Surrogate}: one half of a surrogate pair in UTF-16 encoding.
             var words = Regex.Replace(message.Text, @"\p{Cs}\p{Cs}", m =>
             {   
@@ -215,8 +224,8 @@ namespace TwitchChatVideo
 
             List<Drawable> dl = new List<Drawable>();
 
-            var user_tag = message.Name + ":";
-            var user_size = MeasureText(user_tag, BoldFont);
+            var user_tag = message.Name + ": ";
+            var user_size = MeasureText(user_tag, BoldFont, (int) Width);
 
             if (ShowBadges)
             {
@@ -236,29 +245,15 @@ namespace TwitchChatVideo
                 });
             }
 
-            var color = message.Color;
+            var color = Colors.GetCorrected(message.Color, BGColor, message.Name);
 
-            if(color == null)
-            {
-                if (default_colors.ContainsKey(message.Name))
-                {
-                    color = default_colors[message.Name];
-                }
-                else
-                {
-                    var random = new Random();
-                    color = Color.FromArgb(random.Next(0, 255), random.Next(0, 255), random.Next(0, 255));
-                    default_colors.Add(message.Name, color);
-                }
-            }
-
-            dl.Add(new User(x, y, user_size.Height, user_tag, color.Contrast(BGColor), BoldFont));
+            dl.Add(new User(x, y, user_size.Height, user_tag, color, BoldFont));
             x += user_size.Width;
 
             Action new_line = delegate
             {
                 y += maximum_y_offset;
-                var line = new Line(ChatVideo.HorizontalPad, y, dl);
+                var line = new Line(ChatVideo.HorizontalPad, y, Font.Height + 2 * maximum_y_offset, dl);
                 lines.Add(line);
                 y += maximum_y_offset + line.Height;
                 maximum_y_offset = 0;
@@ -269,7 +264,7 @@ namespace TwitchChatVideo
             Action empty_builder = delegate
             {
                 var txt = builder.ToString();
-                var sz = MeasureText(txt, Font);
+                var sz = MeasureText(txt, Font, (int) Width);
                 dl.Add(new Text(x, 0, sz.Height, txt, ChatColor, Font));
                 builder.Clear();
                 x += sz.Width;
@@ -286,6 +281,7 @@ namespace TwitchChatVideo
                 {
                     if (builder.Length > 0)
                     {
+                        builder.Append(' ');
                         empty_builder();
                     }
 
@@ -314,6 +310,7 @@ namespace TwitchChatVideo
 
                     if (builder.Length > 0)
                     {
+                        builder.Append(' ');
                         empty_builder();
                     }
 
@@ -332,7 +329,7 @@ namespace TwitchChatVideo
                     x += ch.Emote.Width;
 
                     var cheer_amount = cheer?.Amount.ToString();
-                    var sz = MeasureText(cheer_amount, Font);
+                    var sz = MeasureText(cheer_amount, Font, (int) Width);
                     if (x + sz.Width + ChatVideo.HorizontalPad >= Width)
                     {
                         new_line();
@@ -344,7 +341,7 @@ namespace TwitchChatVideo
 
                 var text = builder.ToString();
                 var word_tag = word + ' ';
-                var size = MeasureText(text + word_tag, Font);
+                var size = MeasureText(text + word_tag, Font, (int) Width);
                 if (x + size.Width + ChatVideo.HorizontalPad >= Width)
                 {
                     empty_builder();
@@ -360,13 +357,13 @@ namespace TwitchChatVideo
             if (builder.Length > 0)
             {
                 var text = builder.ToString();
-                var size = MeasureText(text, Font);
+                var size = MeasureText(text, Font, (int) Width);
                 dl.Add(new Text(x, 0, size.Height, text, ChatColor, Font));
             }
 
             if(dl.Count > 0)
             {
-                lines.Add(new Line(ChatVideo.HorizontalPad, y + maximum_y_offset, dl));
+                lines.Add(new Line(ChatVideo.HorizontalPad, y + maximum_y_offset, Font.Height + 2 * maximum_y_offset, dl));
             }
 
             return new DrawableMessage {
