@@ -1,0 +1,8 @@
+before_build:
+- ps: nuget restore
+
+platform:
+  - x86
+
+configuration:
+  - Release
