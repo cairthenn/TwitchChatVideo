@@ -1,3 +1,5 @@
+[![GitHub Release](https://img.shields.io/github/release/cairthenn/TwitchChatVideo.svg?style=flat)]()
+[![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
 [![Build status](https://ci.appveyor.com/api/projects/status/dwm5vd8ai4903jsn?svg=true)](https://ci.appveyor.com/project/cairthenn/twitchchatvideo)
 
 # Twitch Chat Video
