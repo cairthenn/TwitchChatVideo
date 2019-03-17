@@ -8,3 +8,6 @@ platform:
 
 configuration:
   - Release
+
+artifacts:
+  - path: bin/Release/*
