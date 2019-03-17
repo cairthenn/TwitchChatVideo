@@ -1,6 +1,6 @@
 # Twitch Chat Video
 
-Create a chat replay video for any Twitch vod. Currently, a build of the project is available [here](https://cairthenn.com/twitch/TwitchChatVideo.zip).
+Create a chat replay video for any Twitch vod. Currently, a build of the project is available [here](https://github.com/cairthenn/TwitchChatVideo/releases).
 
 This program requires .NET Framework Version 4.7.2. You may need to [install a newer version of .NET Framework](https://dotnet.microsoft.com/download/dotnet-framework-runtime) before running it.
 
