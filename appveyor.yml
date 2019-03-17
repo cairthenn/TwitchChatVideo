@@ -21,4 +21,5 @@ artifacts:
 
 deploy:
   provider: GitHub
-  tag: "v{version}"
+  auth_token: "%ghreleases%"
+  tag: "v%version%"
