@@ -285,7 +285,7 @@ namespace TwitchChatVideo
                         empty_builder();
                     }
 
-                    if (x + emote.Width + ChatVideo.HorizontalPad > Width)
+                    if (x + emote.Width + 2 * ChatVideo.HorizontalPad > Width)
                     {
                         new_line();
                     }
@@ -314,7 +314,7 @@ namespace TwitchChatVideo
                         empty_builder();
                     }
 
-                    if (x + ch.Emote.Width + ChatVideo.HorizontalPad > Width)
+                    if (x + ch.Emote.Width + 2 * ChatVideo.HorizontalPad > Width)
                     {
                         new_line();
                     }
@@ -330,7 +330,7 @@ namespace TwitchChatVideo
 
                     var cheer_amount = cheer?.Amount.ToString();
                     var sz = MeasureText(cheer_amount, Font, (int) Width);
-                    if (x + sz.Width + ChatVideo.HorizontalPad >= Width)
+                    if (x + sz.Width + 2 * ChatVideo.HorizontalPad >= Width)
                     {
                         new_line();
                     }
@@ -342,7 +342,7 @@ namespace TwitchChatVideo
                 var text = builder.ToString();
                 var word_tag = word + ' ';
                 var size = MeasureText(text + word_tag, Font, (int) Width);
-                if (x + size.Width + ChatVideo.HorizontalPad >= Width)
+                if (x + size.Width + 2 * ChatVideo.HorizontalPad >= Width)
                 {
                     empty_builder();
                     new_line();
