@@ -6,9 +6,11 @@ using System.Diagnostics;
 using System.Drawing;
 using System.Runtime.CompilerServices;
 using System.Threading;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
 using System.Windows.Media.Imaging;
+using static TwitchChatVideo.Updater;
 using static TwitchChatVideo.VideoProgress;
 using Color = System.Windows.Media.Color;
 using FontFamily = System.Windows.Media.FontFamily;
@@ -31,6 +33,8 @@ namespace TwitchChatVideo
         private long total;
         private long progress;
         private VideoStatus status;
+        private Visibility update_available;
+        private bool allow_interaction;
 
         private CancellationTokenSource CancellationTokenSource { get; set; }
 
@@ -49,10 +53,14 @@ namespace TwitchChatVideo
         public bool VodChat { get => vod_chat; set => Set(ref vod_chat, value); }
         public float LineSpacing { get => spacing; set => Set(ref spacing, value); }
         public bool Running { get => running; set => Set(ref running, value); }
+        public Visibility UpdateVisibility { get => update_available; set => Set(ref update_available, value); }
+        public bool AllowInteraction { get => allow_interaction; set => Set(ref allow_interaction, value); }
+        private Update PendingUpdate;
 
         public ICommand CancelVideo { get; }
         public ICommand MakeVideo { get; }
         public ICommand MakePreviewWindow { get; }
+        public ICommand Update { get; }
 
         public BitmapSource PreviewImage {
             get {
@@ -98,6 +106,7 @@ namespace TwitchChatVideo
         public ViewModel()
         {
             var settings = Settings.Load();
+            AllowInteraction = true;
             Width = settings.Width;
             Height = settings.Height;
             LineSpacing = settings.LineSpacing;
@@ -114,7 +123,14 @@ namespace TwitchChatVideo
             MakeVideo = new DelegateCommand(ExecuteMakeVideo);
             CancelVideo = new DelegateCommand(ExecuteCancelVideo);
             MakePreviewWindow = new DelegateCommand(ExecuteMakePreviewWindow);
+            Update = new DelegateCommand(ExecuteUpdate);
             Application.Current.MainWindow.Closing += new CancelEventHandler(SaveSettings);
+
+            Task.Run(async () =>
+            {
+                PendingUpdate = await CheckForUpdates();
+                UpdateVisibility = PendingUpdate.NewVersion ? Visibility.Visible : Visibility.Hidden;
+            });
         }
 
         public event PropertyChangedEventHandler PropertyChanged;
@@ -132,6 +148,13 @@ namespace TwitchChatVideo
             {
                 OnPropertyChanged("PreviewImage");
             }
+        }
+
+        private async void ExecuteUpdate(object arg)
+        {
+            AllowInteraction = false;
+            await RunUpdate(PendingUpdate.DownloadUrl);
+            AllowInteraction = true;
         }
 
         private void ExecuteCancelVideo(object arg)

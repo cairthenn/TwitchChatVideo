@@ -92,6 +92,7 @@
     <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System.Data" />
     <Reference Include="System.Drawing" />
+    <Reference Include="System.IO.Compression.FileSystem" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
     <Reference Include="Microsoft.CSharp" />
@@ -134,6 +135,7 @@
     <Compile Include="NativeMethods.cs" />
     <Compile Include="Settings.cs" />
     <Compile Include="TwitchObjects\Bits.cs" />
+    <Compile Include="Updater.cs" />
     <Compile Include="Views\Converters.cs" />
     <Compile Include="Extensions.cs" />
     <Compile Include="Views\PreviewWindow.xaml.cs">

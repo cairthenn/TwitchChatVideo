@@ -13,7 +13,7 @@
         <views:BrushConverter x:Key="BrushConverter"></views:BrushConverter>
         <views:EnumDescriptionConverter x:Key="EnumDescriptionConverter"></views:EnumDescriptionConverter>
     </Window.Resources>
-    <Grid>
+    <Grid IsEnabled="{Binding AllowInteraction}">
         <Grid.DataContext>
             <local:ViewModel/>
         </Grid.DataContext>
@@ -27,6 +27,8 @@
         </Grid.RowDefinitions>
         <Label Content="Controls" HorizontalAlignment="Center" VerticalAlignment="Center"></Label>
         <Label Content="Preview" Grid.Column="1" HorizontalAlignment="Center" VerticalAlignment="Center"></Label>
+        <Button Grid.Column="1" Visibility="{Binding UpdateVisibility}" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="0,0,5,0" Content="Update &#x2193;" Opacity="0.85" 
+                BorderBrush="{x:Null}" Background="{x:Null}" Foreground="#D8000000" Command="{Binding Update}" IsEnabled="{Binding Running, Converter={StaticResource NegateBooleanConverter}}" />
         <Rectangle Grid.Row="1" Stroke="Black" Margin="5" StrokeThickness="0.5" Opacity="0.75"/>
         <Rectangle Grid.Column="1" Grid.Row="1" Stroke="Black" Margin="5" StrokeThickness="0.5" Opacity="0.75"/>
         <Rectangle Grid.Column="1" Grid.Row="1" Margin="10" Fill="{Binding BGColor, Converter={StaticResource BrushConverter}}" >
