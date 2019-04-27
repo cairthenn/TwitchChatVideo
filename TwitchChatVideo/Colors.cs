@@ -108,17 +108,24 @@ namespace TwitchChatVideo
 
             if(darkMode)
             {
-                var dark_lum = Math.Max(hsl.L, .5);
-                if(dark_lum < .6 && hsl.H > 196 && hsl.H < 300)
+                hsl.L = Math.Max(hsl.L, .5);
+                if(hsl.L < .6 && hsl.H > 196 && hsl.H < 300)
                 {
                     hsl.L += Math.Sin((hsl.H - 196) / (300 - 196) * Math.PI) * hsl.S * .4;
                 }
 
-                return cache[name] = HSL.ToRGB(hsl);
+                if (hsl.L < 0.8f && (hsl.H < 22 || hsl.H > 331))
+                {
+                    hsl.L += (hsl.S * .1);
+                }
+            }
+            else
+            {
+                hsl.S = Math.Min(.4, hsl.S);
+                hsl.L = Math.Min(.5, hsl.L);
             }
 
-            hsl.S = Math.Min(.4, hsl.S);
-            hsl.L = Math.Min(.5, hsl.L);
+            hsl.L = Math.Min(.95, hsl.L);
 
             return cache[name] = HSL.ToRGB(hsl);
         }

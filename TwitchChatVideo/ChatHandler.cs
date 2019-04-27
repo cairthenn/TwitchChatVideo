@@ -31,7 +31,7 @@ namespace TwitchChatVideo
 
         public class Line
         {
-
+            private const int MinimumLineHeight = 20;
             public float OffsetX { get; }
             public float OffsetY { get; }
             public List<Drawable> Drawables { get; }
@@ -40,7 +40,7 @@ namespace TwitchChatVideo
 
             public Line(float x, float y, float height, List<Drawable> dl)
             {
-                Height = height;
+                Height = Math.Min(height, MinimumLineHeight);
                 OffsetX = x;
                 OffsetY = y;
                 Drawables = dl;
@@ -253,7 +253,7 @@ namespace TwitchChatVideo
             Action new_line = delegate
             {
                 y += maximum_y_offset;
-                var line = new Line(ChatVideo.HorizontalPad, y, Font.Height + 2 * maximum_y_offset, dl);
+                var line = new Line(ChatVideo.HorizontalPad, y, Font.Height + maximum_y_offset, dl);
                 lines.Add(line);
                 y += maximum_y_offset + line.Height;
                 maximum_y_offset = 0;
@@ -363,7 +363,7 @@ namespace TwitchChatVideo
 
             if(dl.Count > 0)
             {
-                lines.Add(new Line(ChatVideo.HorizontalPad, y + maximum_y_offset, Font.Height + 2 * maximum_y_offset, dl));
+                lines.Add(new Line(ChatVideo.HorizontalPad, y + maximum_y_offset, Font.Height + maximum_y_offset, dl));
             }
 
             return new DrawableMessage {
