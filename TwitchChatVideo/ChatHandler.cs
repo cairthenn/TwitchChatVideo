@@ -40,7 +40,7 @@ namespace TwitchChatVideo
 
             public Line(float x, float y, float height, List<Drawable> dl)
             {
-                Height = Math.Min(height, MinimumLineHeight);
+                Height = Math.Max(height, MinimumLineHeight);
                 OffsetX = x;
                 OffsetY = y;
                 Drawables = dl;
