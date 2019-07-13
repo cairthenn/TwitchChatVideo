@@ -22,15 +22,30 @@ namespace TwitchChatVideo
 
         public static Image GetImage(string local_path, string url)
         {
-            if (!File.Exists(local_path))
-            {
-                using (var client = new WebClient())
-                {
-                    client.DownloadFile(url, local_path);
-                }
-            }
+            var image = DownloadImageFromURL(url);
 
-            return Image.FromFile(local_path);
+            image?.Save(local_path);
+
+            return image;
+        }
+
+        public static Image DownloadImageFromURL(string url)
+        {
+
+            try
+            {
+                var request = WebRequest.Create(url);
+                request.Timeout = 10000;
+                var response = request.GetResponse();
+                var stream = response.GetResponseStream();
+                var image = Image.FromStream(stream);
+                response.Close();
+                return image;
+            }
+            catch (WebException ex)
+            {
+                return null;
+            }
         }
 
         public static async Task<VodInfo> DownloadVideoInfoAsync(string id, IProgress<VideoProgress> progress = null, CancellationToken ct = default(CancellationToken))

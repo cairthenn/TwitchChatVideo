@@ -105,8 +105,8 @@ namespace TwitchChatVideo
             var darkMode = IsDark(background);
 
             var hsl = HSL.FromRGB(color.R, color.G, color.B);
-
-            if(darkMode)
+            // Color correction concept from: https://github.com/fourtf/chatterino
+            if (darkMode)
             {
                 hsl.L = Math.Max(hsl.L, .5);
                 if(hsl.L < .6 && hsl.H > 196 && hsl.H < 300)
