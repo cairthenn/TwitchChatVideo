@@ -14,7 +14,7 @@ namespace TwitchChatVideo
     {
         public const string BaseDir = "./emotes/bttv/";
         const string EmoteSize = "1x";
-        const string GlobalURL = "https://api.betterttv.net/2/emotes/";
+        const string GlobalURL = "https://api.betterttv.net/2/emotes";
         const string BaseURL = "https://api.betterttv.net/2/channels/";
         const string EmoteDownload = "https://cdn.betterttv.net/emote/{0}/{1}";
 
