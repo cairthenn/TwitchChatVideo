@@ -64,7 +64,7 @@ namespace TwitchChatVideo
 
                 var bits = await TwitchDownloader.DownloadBitsAsync(video.StreamerID, progress, ct);
                 var badges = await TwitchDownloader.DownloadBadgesAsync(video.StreamerID, progress, ct);
-                var bttv = await BTTV.CreateAsync(video.Streamer, progress, ct);
+                var bttv = await BTTV.CreateAsync(video.StreamerID, progress, ct);
                 var ffz = await FFZ.CreateAsync(video.Streamer, progress, ct);
                 var messages = await TwitchDownloader.GetChatAsync(ID, video.Duration, progress, ct);
 

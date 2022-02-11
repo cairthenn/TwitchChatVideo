@@ -15,7 +15,7 @@ namespace TwitchChatVideo
     {
         private const string BaseURLChat = "https://api.twitch.tv/v5/videos/{0}/comments?cursor={1}";
         private const string BaseURLVideo = "https://api.twitch.tv/v5/videos/{0}";
-        private const string BaseURLBits = "https://api.twitch.tv/kraken/bits/actions?channel_id={0}";
+        private const string BaseURLBits = "https://api.twitch.tv/v5/bits/actions?channel_id={0}";
         private const string BaseURLGlobalBadges = "https://badges.twitch.tv/v1/badges/global/display";
         private const string BaseURLChannelBadges = "https://badges.twitch.tv/v1/badges/channels/{0}/display";
 
