@@ -14,14 +14,14 @@ namespace TwitchChatVideo
     {
         public const string BaseDir = "./emotes/bttv/";
         const string EmoteSize = "1x";
-        const string GlobalURL = "https://api.betterttv.net/2/emotes";
-        const string BaseURL = "https://api.betterttv.net/2/channels/";
+        const string GlobalURL = "https://api.betterttv.net/3/cached/emotes/global";
+        const string BaseURL = "https://api.betterttv.net/3/cached/users/twitch/";
         const string EmoteDownload = "https://cdn.betterttv.net/emote/{0}/{1}";
 
-        private Dictionary<string, EmoteList.Emote> emote_dictionary;
+        private Dictionary<string, Emote> emote_dictionary;
         private Dictionary<string, Image> image_cache;
 
-        internal BTTV(Dictionary<string, EmoteList.Emote> emote_dictionary)
+        internal BTTV(Dictionary<string, Emote> emote_dictionary)
         {
             this.image_cache = new Dictionary<string, Image>();
             this.emote_dictionary = emote_dictionary;
@@ -40,15 +40,18 @@ namespace TwitchChatVideo
                     using (var channel_stream = new StreamReader((await channel_req.GetResponseAsync())?.GetResponseStream()))
                     {
                         progress?.Report(new VideoProgress(1, 1, VideoProgress.VideoStatus.BTTV));
-                        var global_emotes = JObject.Parse(global_stream.ReadToEnd()).ToObject<EmoteList>();
-                        var channel_emotes = JObject.Parse(channel_stream.ReadToEnd()).ToObject<EmoteList>();
-                        return new BTTV(channel_emotes.Emotes.Concat(global_emotes.Emotes).ToDictionary(x => x.Code));
+
+                        var json = channel_stream.ReadToEnd();
+
+                        var global_emotes = JArray.Parse(global_stream.ReadToEnd()).ToObject<Emote[]>();
+                        var channel_emotes = JObject.Parse(json)["channelEmotes"].ToObject<Emote[]>();
+                        return new BTTV(channel_emotes.Concat(global_emotes).ToDictionary(x => x.Code));
                     }
                 }
                 catch (WebException e)
                 {
                     System.Windows.MessageBox.Show(string.Format("Unable to download BTTV emotes: \n\n{0}", e.Message));
-                    return new BTTV(new Dictionary<string, EmoteList.Emote>());
+                    return new BTTV(new Dictionary<string, Emote>());
                 }
             });
         }
@@ -75,24 +78,15 @@ namespace TwitchChatVideo
             return img;
         }
 
-        public class EmoteList
-        {
-            [JsonProperty("urlTemplate")]
-            public string BaseURL { get; set; }
-            [JsonProperty("emotes")]
-            public Emote[] Emotes { get; set; }
-
-            public class Emote
-            {
-                [JsonProperty("id")]
-                public string ID { get; set; }
-                [JsonProperty("channel")]
-                public string Channel { get; set; }
-                [JsonProperty("code")] 
-                public string Code { get; set; }
-                [JsonProperty("imageType")]
-                public string ImageType { get; set; }
-            }
+        public class Emote {
+            [JsonProperty("id")]
+            public string ID { get; set; }
+            //[JsonProperty("channel")]
+            //public string Channel { get; set; }
+            [JsonProperty("code")]
+            public string Code { get; set; }
+            [JsonProperty("imageType")]
+            public string ImageType { get; set; }
         }
     }
 }
