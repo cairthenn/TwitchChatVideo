@@ -8891,7 +8891,7 @@ namespace TwitchChatVideo.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 96qpeh33rhlnci2bquj2sffoo92hk0.
+        ///   Looks up a localized string similar to kimne78kx3ncx6brgo4mv6wki5h1ko.
         /// </summary>
         internal static string client_id {
             get {
